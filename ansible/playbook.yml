@@ -1,0 +1,223 @@
+---
+- name: Install packages and configure system
+  hosts: localhost
+  become: yes
+
+  tasks:
+    # Update system repositories
+    - name: Update repositories
+      dnf:
+        update_cache: yes
+        upgrade: yes
+
+    # Add RPM Fusion repository for free and non-free software
+    - name: Install rpm fusion repository
+      dnf:
+        name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ansible_distribution_major_version}}.noarch.rpm,https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ansible_distribution_major_version}}.noarch.rpm"
+
+    # Install GNOME Tweak Tool
+    - name: Install gnome-tweak-tool
+      dnf:
+        name: gnome-tweak-tool
+        state: present
+
+    # Add Flathub repository for Flatpak packages
+    - name: Add Flathub repository
+      command: flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    # Install common packages
+    - name: Install common packages
+      dnf:
+        name:
+          - chromium
+          - vlc
+          - neofetch
+          - skype
+          - vagrant
+          - tlp
+          - tlp-rdw
+        state: present
+
+    # Install Visual Studio Code (Fedora 33/34 only)
+    - name: Install Visual Studio Code
+      dnf_repository:
+        name: "vscode"
+        description: "Visual Studio Code"
+        baseurl: "https://packages.microsoft.com/yumrepos/vscode"
+        gpgcheck: yes
+        gpgkey: "https://packages.microsoft.com/keys/microsoft.asc"
+      when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+
+    # Install Node.js
+    - name: Install Node.js
+      dnf_module:
+        name: nodejs
+        state: latest
+
+    # Install Docker and Docker Compose (Fedora 33/34 only)
+    - name: Install Docker and Docker Compose
+      block:
+        # Install prerequisites
+        - name: Install Docker prerequisites
+          dnf:
+            name:
+              - dnf-plugins-core
+            state: present
+          tags:
+            - docker
+
+        # Add Docker CE repository
+        - name: Add Docker repository
+          dnf_repository:
+            name: "docker"
+            description: "Docker CE stable"
+            baseurl: "https://download.docker.com/linux/fedora/{{ansible_distribution_major_version}}/x86_64/stable"
+            gpgcheck: yes
+            gpgkey: "https://download.docker.com/linux/fedora/gpg"
+          when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+
+        # Install Docker packages
+        - name: Install Docker packages
+          dnf:
+            name:
+              - docker-ce
+              - docker-ce-cli
+              - containerd.io
+              - docker-buildx-plugin
+              - docker-compose-plugin
+            state: present
+          when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+          tags:
+            - docker
+
+         
+        - name: Start Docker service
+        service:
+          name: docker
+          state: started
+        when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+        tags:
+          - docker
+
+        - name: Add user to Docker group
+          user:
+            name: "{{ansible_user}}"
+            groups: docker
+            append: yes
+          when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+          tags:
+            - docker
+
+        - name: Install VirtualBox
+          dnf:
+            name:
+              - @"development tools"
+              - kernel-headers
+              - kernel-devel
+              - dkms
+              - elfutils-libelf-devel
+              - qt5-qtx11extras-devel
+              - SDL-devel
+              - libxslt
+              - libxml2-devel
+              - libIDL-devel
+              - libxcrypt-devel
+              - libcurl-devel
+              - gsoap-devel
+              - perl
+              - python3-devel
+            state: present
+          when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+          tags:
+            - virtualbox
+
+        - name: Download VirtualBox key
+          get_url:
+            url: https://www.virtualbox.org/download/oracle_vbox.asc
+            dest: /tmp/oracle_vbox.asc
+          when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+          tags:
+            - virtualbox
+
+        - name: Add VirtualBox key
+          rpm_key:
+            state: present
+            key: /tmp/oracle_vbox.asc
+          when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+          tags:
+            - virtualbox
+
+        - name: Add VirtualBox repository
+          dnf_repository:
+            name: "virtualbox"
+            description: "Oracle VirtualBox"
+            baseurl: "https://download.virtualbox.org/virtualbox/rpm/fedora/{{ansible_distribution_major_version}}/x86_64"
+            gpgcheck: yes
+            gpgkey: "https://www.virtualbox.org/download/oracle_vbox.asc"
+          when: ansible_distribution_major_version == "33" or ansible_distribution_major_version == "34"
+          tags:
+            - virtualbox
+
+
+    - name: Download VirtualBox extension pack
+      get_url:
+        url: "https://download.virtualbox.org/virtualbox/{{ virtualbox_version }}/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.vbox-extpack"
+        dest: "/tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.vbox-extpack"
+
+    - name: Install VirtualBox extension pack
+      command: VBoxManage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-{{ virtualbox_version }}.vbox-extpack --force
+
+    - name: Enable VirtualBox kernel modules
+      command: "/usr/lib/virtualbox/vboxdrv.sh setup"
+
+    - name: Install Gnome Shell extensions
+      dnf:
+        name:
+          - chrome-gnome-shell
+          - gnome-shell-extension-dash-to-dock
+          - gnome-shell-extension-user-theme
+        state: present
+
+    - name: Install Spotify
+      dnf:
+        name: spotify-client
+        state: present
+
+    - name: Install GNOME Tweaks extensions
+      dnf:
+        name:
+          - gnome-shell-extension-pomodoro
+          - gnome-shell-extension-topicons-plus
+          - gnome-shell-extension-gsconnect
+        state: present
+
+    - name: Install NVM (Node Version Manager)
+      shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+        source ~/.bashrc
+      args:
+        executable: /bin/bash
+
+    - name: Install latest LTS Node.js version
+      shell: |
+        source ~/.bashrc
+        nvm install --lts
+      args:
+        executable: /bin/bash
+
+    - name: Install Yarn package manager
+      dnf:
+        name: yarn
+        state: present
+
+    - name: Enable and start TLP
+      service:
+        name: tlp
+        state: started
+        enabled: yes
+
+    - name: Enable and start TLP Radio Device Wizard
+      service:
+        name: tlp-rdw
+        state: started
+        enabled: yes
