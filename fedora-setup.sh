@@ -14,7 +14,7 @@ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flat
 sudo dnf groupupdate core
 # software installation
 sudo flatpak install -y flathub com.spotify.Client
-sudo dnf -y chromium flameshot
+sudo dnf -y install chromium flameshot
 sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
 dnf check-update
@@ -46,7 +46,7 @@ repo_gpgcheck=1
 gpgkey=https://www.virtualbox.org/download/oracle_vbox.asc
 EOF
 sudo dnf search virtualbox
-sudo dnf -y install VirtualBox-7.0
+sudo dnf -y install VirtualBox
 sudo usermod -a -G vboxusers $USER
 newgrp vboxusers
 
@@ -54,7 +54,14 @@ newgrp vboxusers
 sudo curl -o /etc/yum.repos.d/skype-stable.repo https://repo.skype.com/rpm/stable/skype-stable.repo
 sudo dnf -y install skypeforlinux
 
-sudo dnf -y install vlc neofetch vagrant ansible
+sudo dnf -y install vlc neofetch vagrant ansible neovim python3-neovim
+
+# NVIDIA Drivers (open source)
+
+
+# rofi power menu
+git clone https://github.com/jluttine/rofi-power-menu.git
+cp rofi-power-menu ~/.local/bin/rofi-power-menu
 
 # Remove Libre Office and install WPS Office
 sudo dnf -y remove libreoffice*
