@@ -12,7 +12,14 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 chsh -s $(which zsh)
 
 # Install Apache, PHP, and other dependencies
-apt-get install -y git apache2 php8.0 libapache2-mod-php8.0 mariadb-server nodejs npm yarn phpunit golang
+sudo apt-get install apt-transport-https curl
+sudo mkdir -p /etc/apt/keyrings
+sudo curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
+
+sudo apt-get update
+sudo apt-get install mariadb-server
+
+apt-get install -y git apache2 php8.0 libapache2-mod-php8.0 nodejs npm yarn phpunit golang
 
 # Install NVM (Node Version Manager)
 curl -o- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
