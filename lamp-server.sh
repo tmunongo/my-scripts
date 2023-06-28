@@ -17,8 +17,11 @@ sudo mkdir -p /etc/apt/keyrings
 sudo curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
 
 sudo apt-get update
-sudo apt-get install mariadb-server
 
+# Linux kernel headers and dev tools
+sudo apt-get install linux-headers-$(uname -r) build-essential dkms
+
+sudo apt-get install mariadb-server
 apt-get install -y git apache2 php8.0 libapache2-mod-php8.0 nodejs npm yarn phpunit golang
 
 # Install NVM (Node Version Manager)
@@ -27,8 +30,10 @@ curl -o- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.s
 # Install PHPMyAdmin
 apt-get install -y phpmyadmin
 
-# Install additional PHP versions (PHP 5 and PHP 7)
-apt-get install -y php5.6 php7.4
+# Install additional PHP  versions (PHP 5 and PHP 7)
+add-apt-repository -y ppa:ondrej/php
+apt update
+apt install php5.6 php7.4
 
 # Install Composer
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
