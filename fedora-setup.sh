@@ -13,8 +13,8 @@ sudo dnf -y install flatpak
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 sudo dnf groupupdate core
 # software installation
-sudo flatpak install -y flathub com.spotify.Client
-sudo dnf -y install chromium flameshot
+sudo flatpak install -y flathub com.spotify.Client Skype IntelliJ
+sudo dnf -y install chromium flameshot kitty
 sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
 dnf check-update
@@ -64,8 +64,8 @@ git clone https://github.com/jluttine/rofi-power-menu.git
 cp rofi-power-menu ~/.local/bin/rofi-power-menu
 
 # Remove Libre Office and install WPS Office
-sudo dnf -y remove libreoffice*
-sudo dnf -y install https://linux.mirrors.es.net/wps-office/11/x86_64/wps-office-11.1.0.10740-1.x86_64.rpm
+# sudo dnf -y remove libreoffice*
+# sudo dnf -y install https://linux.mirrors.es.net/wps-office/11/x86_64/wps-office-11.1.0.10740-1.x86_64.rpm
 
 sudo dnf -y install tlp tlp-rdw
 
