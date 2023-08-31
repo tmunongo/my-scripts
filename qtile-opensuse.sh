@@ -5,7 +5,10 @@ sudo zypper refresh
 sudo zypper update -y
 
 # Install required packages
-sudo zypper install -y qtile rofi kitty vivaldi skypeforlinux
+zypper addrepo https://download.opensuse.org/repositories/openSUSE:Factory/standard/openSUSE:Factory.repo
+zypper refresh
+zypper install qtile
+sudo zypper install -y rofi kitty
 
 # Install rofi-power-menu
 git clone https://github.com/jluttine/rofi-power-menu.git
