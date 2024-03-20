@@ -20,7 +20,7 @@ sudo systemctl enable NetworkManager
 sudo systemctl start NetworkManager
 
 # Create qtile config directory
-mkdir -p ~/.config/qtile
+mkdir -p ~/.config/qtile.py
 
 # Customize the qtile config (replace with your preferences)
 echo '

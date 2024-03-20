@@ -47,6 +47,7 @@ gpgkey=https://www.virtualbox.org/download/oracle_vbox.asc
 EOF
 sudo dnf search virtualbox
 sudo dnf -y install VirtualBox
+sudo dnf install akmod-VirtualBox kernel-devel-$(uname -r)
 sudo usermod -a -G vboxusers $USER
 newgrp vboxusers
 
@@ -54,7 +55,11 @@ newgrp vboxusers
 sudo curl -o /etc/yum.repos.d/skype-stable.repo https://repo.skype.com/rpm/stable/skype-stable.repo
 sudo dnf -y install skypeforlinux
 
-sudo dnf -y install vlc neofetch vagrant ansible neovim python3-neovim
+sudo dnf install -y dnf-plugins-core
+sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+sudo dnf -y install vagrant
+
+sudo dnf -y install vlc neofetch ansible neovim python3-neovim deluge
 
 # NVIDIA Drivers (open source)
 
